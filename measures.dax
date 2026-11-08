@@ -1,0 +1,42 @@
+-- Create these measures after importing transactions_clean.csv.
+-- Table name assumed: transactions_clean
+-- Column names assumed to match the CSV output.
+
+Total Revenue = SUM(transactions_clean[revenue])
+
+Total Orders = DISTINCTCOUNT(transactions_clean[invoice])
+
+Total Customers = DISTINCTCOUNT(transactions_clean[customer_id])
+
+Units Sold = SUM(transactions_clean[quantity])
+
+Average Order Value = DIVIDE([Total Revenue], [Total Orders])
+
+Revenue per Customer = DIVIDE([Total Revenue], [Total Customers])
+
+Average Selling Price = DIVIDE([Total Revenue], [Units Sold])
+
+-- Customer RFM table measures (import customer_rfm.csv separately)
+Inactive Customers =
+CALCULATE(
+    DISTINCTCOUNT(customer_rfm[customer_id]),
+    customer_rfm[customer_status] = "Inactive (90+ days)"
+)
+
+At Risk Customers =
+CALCULATE(
+    DISTINCTCOUNT(customer_rfm[customer_id]),
+    customer_rfm[customer_status] = "At Risk"
+)
+
+Active Customers =
+CALCULATE(
+    DISTINCTCOUNT(customer_rfm[customer_id]),
+    customer_rfm[customer_status] = "Active"
+)
+
+Customer Monetary Value = SUM(customer_rfm[monetary])
+
+-- Retention table: use cohort_retention.csv.
+-- Format retention_rate as Percentage in Power BI.
+Average Cohort Retention = AVERAGE(cohort_retention[retention_rate])
